@@ -1,0 +1,24 @@
+[package]
+name = "yatfp"
+version = "0.1.0"
+edition = "2021"
+authors = ["WinterSys/Vortetty"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = { version = "4.5.14", features = ["cargo"] }
+clearscreen = "3.0.0"
+crossterm = "0.28.1"
+csscolorparser = { version = "0.7.0", features = ["lab", "rgb"] }
+image = "0.25.2"
+whoami = "1.5.1"
+termcolor = "1.1"
+ansi_colours = "1.0"
+base64 = "0.22.1"
+tempfile = "3.1"
+console = { version = "0.15", default-features = false }
+lazy_static = "1.4"
+sixel-rs = "0.3.3"
+kitty_image = "0.1.0"
+libc = "0.2.155"
