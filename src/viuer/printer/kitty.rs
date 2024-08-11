@@ -3,7 +3,6 @@ use crate::viuer::printer::{adjust_offset, find_best_fit, Printer};
 use crate::viuer::Config;
 use base64::{engine::general_purpose, Engine};
 use console::{Key, Term};
-use image::imageops;
 use lazy_static::lazy_static;
 use std::io::Write;
 use std::io::{Error, ErrorKind};

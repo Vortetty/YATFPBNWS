@@ -1,12 +1,13 @@
 mod viuer;
 
+use std::fmt::Display;
 use std::io;
-
 use clap::{arg, command};
 use crossterm::{cursor, execute};
 use csscolorparser::Color;
 use image::{imageops, DynamicImage, ImageBuffer, Rgba};
 use whoami::fallible;
+use owo_colors::OwoColorize;
 
 macro_rules! clearScreen {
     ($T:expr) => {
@@ -14,6 +15,30 @@ macro_rules! clearScreen {
         for _ in 0..$T {
             println!();
         }
+    };
+}
+
+#[derive(Clone)]
+struct TermLine {
+    label: Option<String>,
+    text: String
+}
+impl Display for TermLine {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if self.label.is_some() {
+            return write!(f, "{}: {}", self.label.as_ref().unwrap().bright_magenta(), self.text);
+        } else {
+            return write!(f, "{}", self.text);
+        }
+    }
+}
+
+macro_rules! addLine {
+    ($lines:expr, $label:expr, $line:expr) => {
+        $lines.push(TermLine {
+            label: $label,
+            text: $line
+        })
     };
 }
 
@@ -40,13 +65,16 @@ fn main() {
     let im_path = args.get_one::<String>("im");
     let bg_color = args.get_one::<String>("bgc");
     let has_im = im_path.is_some();
-    let mut lines: Vec<String> = vec![];
+    let mut lines: Vec<TermLine> = vec![];
 
     clearScreen!(term_size_y);
 
-    lines.push(name_string.clone());
-    lines.push(format!("╶{:─<1$}╴", "", name_string.len() - 2));
-    lines.push(format!("{} {}", whoami::distro(), whoami::arch()));
+    //lines.push(name_string.clone());
+    //lines.push(format!("╶{:─<1$}╴", "", name_string.len() - 2));
+    //lines.push(format!("{} {}", whoami::distro(), whoami::arch()));
+    addLine!(lines, None, format!("{}@{}", whoami::realname().bright_magenta(), fallible::hostname().unwrap_or_else(|_e| -> String { String::from("?") }).bright_magenta()));
+    addLine!(lines, None, format!("╶{:─<1$}╴", "", name_string.len() - 2));
+    addLine!(lines, Some("OS".to_string()), format!("{} {}", whoami::distro(), whoami::arch()));
 
     if has_im {
         let im = image::open(im_path.unwrap())

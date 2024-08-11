@@ -36,7 +36,7 @@ pub trait Printer {
         filename: P,
         config: &Config,
     ) -> ViuResult<(u32, u32)> {
-        let img = image::io::Reader::open(filename)?
+        let img = image::ImageReader::open(filename)?
             .with_guessed_format()?
             .decode()?;
         self.print(stdout, &img, config)
