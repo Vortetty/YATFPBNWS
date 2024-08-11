@@ -26,6 +26,9 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v4
 
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
       # Install your linters here
 
       - name: Run linters
