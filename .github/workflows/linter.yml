@@ -31,4 +31,4 @@ jobs:
       - name: Run linters
         uses: wearerequired/lint-action@v2
         with:
-          - rustfmt
+          rustfmt: true
