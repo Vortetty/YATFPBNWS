@@ -1,9 +1,11 @@
 mod conf;
 mod model;
 mod viuer;
+mod uptime;
 
 use clap::{arg, command};
 use text_splitter::TextSplitter;
+use uptime::get_uptime;
 use core::str;
 use crossterm::{cursor, execute};
 use csscolorparser::Color;
@@ -30,7 +32,7 @@ macro_rules! clearScreen {
 struct TermLine {
     label: Option<String>,
     text: String,
-    newline_left_pad: u8
+    newline_left_pad: usize
 }
 impl Display for TermLine {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -113,6 +115,8 @@ fn main() {
     //lines.push(name_string.clone());
     //lines.push(format!("╶{:─<1$}╴", "", name_string.len() - 2));
     //lines.push(format!("{} {}", whoami::distro(), whoami::arch()));
+
+    // Name
     addLine!(
         lines,
         None,
@@ -124,13 +128,26 @@ fn main() {
                 .bright_magenta()
         )
     );
+
+    // Spacer
     addLine!(lines, None, format!("╶{:─<1$}╴", "", name_string.len() - 2));
+
+    // OS Info
     addLine!(
         lines,
         Some("OS".to_string()),
-        format!("{} {}", whoami::distro(), whoami::arch())
+        format!("{} {} ({})", whoami::distro(), whoami::arch(), System::kernel_version().unwrap_or_else(|| {"Unknown kernel".to_string()}))
     );
+
+    // Model
     addLine!(lines, Some("Model".to_string()), format!("{}", get_model()));
+
+    // Uptime
+    addLine!(lines, Some("Uptime".to_string()), get_uptime());
+
+    // Packages
+    // https://github.com/dylanaraps/neofetch/blob/ccd5d9f52609bbdcd5d8fa78c4fdb0f12954125f/neofetch#L1509
+    addLine!(lines, Some("Packages".to_string()), "TODO".to_string());
 
     if has_im {
         moveCursor!(0, 0);
@@ -192,13 +209,13 @@ fn main() {
         {
             if j > 0 && j < strs.len()-1 {
                 moveCursor!((im_w + (1 * ((im_w != 0) as u32))) as u16, i as u16 + j as u16);
-                println!("│ {}", s);
+                println!("{}│ {}", " ".repeat(line.newline_left_pad), s);
             } else if j == 0 {
                 moveCursor!((im_w + (1 * ((im_w != 0) as u32))) as u16, i as u16);
-                println!("{}", s);
+                println!("{}{}", " ".repeat(line.newline_left_pad), s);
             } else {
                 moveCursor!((im_w + (1 * ((im_w != 0) as u32))) as u16, i as u16 + j as u16);
-                println!("╰ {}", s);
+                println!("{}╰ {}", " ".repeat(line.newline_left_pad), s);
             }
         }
     }
