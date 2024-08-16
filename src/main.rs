@@ -1,20 +1,25 @@
 mod conf;
 mod model;
-mod viuer;
 mod uptime;
+mod viuer;
+mod shell;
+mod packages;
+mod utils;
 
 use clap::{arg, command};
-use text_splitter::TextSplitter;
-use uptime::get_uptime;
+use packages::get_packages;
+use shell::get_shell;
 use core::str;
 use crossterm::{cursor, execute};
 use csscolorparser::Color;
 use image::{imageops, DynamicImage, ImageBuffer, Rgba};
 use model::get_model;
 use owo_colors::OwoColorize;
-use std::fmt::Display;
 use std::io;
+use std::fmt::Display;
 use sysinfo::System;
+use text_splitter::TextSplitter;
+use uptime::get_uptime;
 
 //#[global_allocator]
 //static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
@@ -32,7 +37,7 @@ macro_rules! clearScreen {
 struct TermLine {
     label: Option<String>,
     text: String,
-    newline_left_pad: usize
+    newline_left_pad: usize,
 }
 impl Display for TermLine {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -54,14 +59,14 @@ macro_rules! addLine {
         $lines.push(TermLine {
             label: $label,
             text: $line,
-            newline_left_pad: 0
+            newline_left_pad: 0,
         })
     };
     ($lines:expr, $label:expr, $line:expr, $leftpad:expr) => {
         $lines.push(TermLine {
             label: $label,
             text: $line,
-            newline_left_pad: $leftpad
+            newline_left_pad: $leftpad,
         })
     };
 }
@@ -136,7 +141,12 @@ fn main() {
     addLine!(
         lines,
         Some("OS".to_string()),
-        format!("{} {} ({})", whoami::distro(), whoami::arch(), System::kernel_version().unwrap_or_else(|| {"Unknown kernel".to_string()}))
+        format!(
+            "{} {} ({})",
+            whoami::distro(),
+            whoami::arch(),
+            System::kernel_version().unwrap_or_else(|| { "Unknown kernel".to_string() })
+        )
     );
 
     // Model
@@ -147,7 +157,14 @@ fn main() {
 
     // Packages
     // https://github.com/dylanaraps/neofetch/blob/ccd5d9f52609bbdcd5d8fa78c4fdb0f12954125f/neofetch#L1509
-    addLine!(lines, Some("Packages".to_string()), "TODO".to_string());
+    addLine!(lines, Some("Packages".to_string()), get_packages());
+
+    // Shell
+    addLine!(
+        lines,
+        Some("Shell".to_string()),
+        get_shell(sys)
+    );
 
     if has_im {
         moveCursor!(0, 0);
@@ -202,19 +219,26 @@ fn main() {
     let max_line_size = term_size_x as usize - im_w as usize;
     let mut totallines = 0;
     for (i, line) in lines.clone().iter().enumerate() {
-        let linestr = format!("{}", line);
-        let strs = TextSplitter::new(max_line_size).chunks(linestr.as_str()).collect::<Vec<&str>>();
+        let linestr = format!("{}", line).replace("\n", " ");
+        let strs = TextSplitter::new(max_line_size)
+            .chunks(linestr.as_str())
+            .collect::<Vec<&str>>();
         totallines += strs.len() as u32;
-        for (j, s) in strs.iter().enumerate()
-        {
-            if j > 0 && j < strs.len()-1 {
-                moveCursor!((im_w + (1 * ((im_w != 0) as u32))) as u16, i as u16 + j as u16);
+        for (j, s) in strs.iter().enumerate() {
+            if j > 0 && j < strs.len() - 1 {
+                moveCursor!(
+                    (im_w + (1 * ((im_w != 0) as u32))) as u16,
+                    i as u16 + j as u16
+                );
                 println!("{}│ {}", " ".repeat(line.newline_left_pad), s);
             } else if j == 0 {
                 moveCursor!((im_w + (1 * ((im_w != 0) as u32))) as u16, i as u16);
                 println!("{}{}", " ".repeat(line.newline_left_pad), s);
             } else {
-                moveCursor!((im_w + (1 * ((im_w != 0) as u32))) as u16, i as u16 + j as u16);
+                moveCursor!(
+                    (im_w + (1 * ((im_w != 0) as u32))) as u16,
+                    i as u16 + j as u16
+                );
                 println!("{}╰ {}", " ".repeat(line.newline_left_pad), s);
             }
         }
@@ -222,7 +246,7 @@ fn main() {
 
     moveCursor!(
         (im_w - (1 * ((im_w > 0) as u32))) as u16,
-        (u32::max(im_h, totallines-1) - (1 * ((im_w > 0) as u32))) as u16
+        (u32::max(im_h, totallines - 1) - (1 * ((im_w > 0) as u32))) as u16
     );
     println!();
 }

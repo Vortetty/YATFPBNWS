@@ -2017,6 +2017,7 @@ dependencies = [
  "tempfile",
  "termcolor",
  "text-splitter",
+ "which",
  "whoami",
 ]
 
