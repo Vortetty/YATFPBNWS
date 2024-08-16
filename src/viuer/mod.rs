@@ -99,6 +99,7 @@ pub fn print(img: &DynamicImage, config: &Config) -> ViuResult<(u32, u32)> {
 /// // Also, the terminal's background color will be used instead of checkerboard pattern.
 /// print_from_file("img.jpg", &conf).expect("Image printing failed.");
 /// ```
+#[allow(unused)]
 pub fn print_from_file<P: AsRef<Path>>(filename: P, config: &Config) -> ViuResult<(u32, u32)> {
     let mut stdout = std::io::stdout();
     if config.restore_cursor {
