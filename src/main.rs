@@ -17,7 +17,7 @@ use model::get_model;
 use owo_colors::OwoColorize;
 use std::io;
 use std::fmt::Display;
-use sysinfo::System;
+use sysinfo::{Pid, ProcessRefreshKind, RefreshKind, System, Users};
 use text_splitter::TextSplitter;
 use uptime::get_uptime;
 
@@ -78,10 +78,21 @@ macro_rules! moveCursor {
 }
 
 fn main() {
+    // Get bare minimum system info
+    let sys = System::new_with_specifics(
+        RefreshKind::new().with_processes(ProcessRefreshKind::everything())
+    );
+    let users = Users::new_with_refreshed_list();
+    let current_user = if let Some(p) = sys.process(Pid::from_u32(std::os::unix::process::parent_id())) {
+        users.get_user_by_id(p.user_id().unwrap())
+    } else {
+        users.first()
+    }.unwrap();
+
     let (term_size_x, term_size_y) = viuer::terminal_size();
     let name_string = format!(
         "{}@{}",
-        whoami::realname(),
+        current_user.name(),
         System::name().unwrap_or_else(|| -> String { String::from("?") })
     );
 
@@ -109,12 +120,6 @@ fn main() {
     let has_im = im_path.is_some();
     let mut lines: Vec<TermLine> = vec![];
 
-    // Please note that we use "new_all" to ensure that all lists of
-    // CPUs and processes are filled!
-    let mut sys = System::new_all();
-    // First we update all information of our `System` struct.
-    sys.refresh_all();
-
     clearScreen!(term_size_y);
 
     //lines.push(name_string.clone());
@@ -127,7 +132,7 @@ fn main() {
         None,
         format!(
             "{}@{}",
-            whoami::realname().bright_magenta(),
+            current_user.name().bright_magenta(),
             System::name()
                 .unwrap_or_else(|| -> String { String::from("?") })
                 .bright_magenta()
@@ -143,8 +148,8 @@ fn main() {
         Some("OS".to_string()),
         format!(
             "{} {} ({})",
-            whoami::distro(),
-            whoami::arch(),
+            System::distribution_id(),
+            System::cpu_arch().unwrap(),
             System::kernel_version().unwrap_or_else(|| { "Unknown kernel".to_string() })
         )
     );
