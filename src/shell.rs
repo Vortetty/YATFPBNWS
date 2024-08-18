@@ -11,11 +11,14 @@ pub fn get_shell(sys: System) -> String {
 
     match shell_name.as_str() {
         "zsh" => {
+            // This op is SO F_CKING SLOW OML
+            // Command uses so many futexes it's insane
+            // We need to optimize this somehow :/
             let tmp = Command::new("zsh").arg("--version").output();
             if tmp.is_ok() {
                 format!("{}", String::from_utf8(tmp.unwrap().stdout.to_vec()).unwrap())
             } else {
-                "zsh".to_string()
+                "zsh ?.?".to_string()
             }
         }
         _ => {

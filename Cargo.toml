@@ -9,23 +9,51 @@ authors = ["WinterSys/Vortetty"]
 [profile.release]
 strip = "symbols"
 opt-level = 3
-lto = true
+lto = "fat"
 codegen-units = 1
 panic = "abort"
-rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-Z", "threads=24"]
+rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-Z", "threads=24", "-Z", "location-detail=none"]
+
+[profile.release.package."*"]
+strip = "symbols"
+opt-level = 3
+codegen-units = 1
+rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-Z", "threads=24", "-Z", "location-detail=none"]
 
 [profile.dev]
 strip = false
 opt-level = 3
+lto = "fat"
 codegen-units = 24
-rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-Z", "threads=24"]
+debug=1
+rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-Z", "threads=24", "-C", "symbol-mangling-version=v0", "-C", "link-arg=-Wl,--no-rosegment"]
+
+[profile.dev.package."*"]
+strip = false
+opt-level = 3
+codegen-units = 24
+debug=1
+rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-Z", "threads=24", "-C", "symbol-mangling-version=v0", "-C", "link-arg=-Wl,--no-rosegment"]
+
+[profile.bench]
+strip = false
+opt-level = 3
+lto = "fat"
+codegen-units = 24
+debug=1
+rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-Z", "threads=24", "-C", "symbol-mangling-version=v0", "-C", "link-arg=-Wl,--no-rosegment"]
+
+[profile.bench.package."*"]
+strip = false
+opt-level = 3
+codegen-units = 24
+debug=1
+rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-Z", "threads=24", "-C", "symbol-mangling-version=v0", "-C", "link-arg=-Wl,--no-rosegment"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-mimalloc = "0.1"
 clap = { version = "4.5.14", features = ["cargo"] }
-clearscreen = "3.0.0"
 crossterm = "0.28.1"
 csscolorparser = { version = "0.7.0", features = ["lab", "rgb"] }
 image = "0.25.2"
@@ -36,10 +64,8 @@ tempfile = "3.1"
 console = { version = "0.15", default-features = false }
 lazy_static = "1.4"
 sixel-rs = "0.3.3"
-kitty_image = "0.1.0"
-libc = "0.2.155"
 owo-colors = "4.0.0"
 sysinfo = "0.31.2"
-rust-ini = "0.21.1"
 text-splitter = "0.15.0"
 which = "6.0.2"
+display-info = "0.5.1"

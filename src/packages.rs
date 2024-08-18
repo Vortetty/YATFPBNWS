@@ -1,24 +1,18 @@
-use std::process::Command;
+use std::fs;
 
 use which::which;
 
-use crate::utils::count_newlines_hyperscreaming;
+//use crate::utils::count_newlines_hyperscreaming;
 
 pub fn get_packages() -> String {
-    // FML
-    // Thank FUCK neofetch is MIT or i would not bother
     let mut packages = "".to_string();
 
     if which("pacman").is_ok() {
-        packages += format!("{} (pacman)", {
-            let tmp = Command::new("pacman").arg("-Q").output();
-            if tmp.is_ok() {
-                count_newlines_hyperscreaming(String::from_utf8(tmp.unwrap().stdout.to_vec()).unwrap().as_str())
-            } else {
-                0
-            }
-        }).as_str();
+        let cnt = fs::read_dir("/var/lib/pacman/local/").unwrap().count() - 1;
+        if cnt > 0 {
+            packages += format!("{} (pacman)", cnt).as_str()
+        }
     }
 
-    return packages;
+    return packages.trim_end().to_string();
 }

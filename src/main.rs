@@ -20,9 +20,7 @@ use std::fmt::Display;
 use sysinfo::{Pid, ProcessRefreshKind, RefreshKind, System, Users};
 use text_splitter::TextSplitter;
 use uptime::get_uptime;
-
-//#[global_allocator]
-//static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
+use display_info::DisplayInfo;
 
 macro_rules! clearScreen {
     ($T:expr) => {
