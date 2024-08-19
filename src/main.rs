@@ -5,8 +5,10 @@ mod viuer;
 mod shell;
 mod packages;
 mod utils;
+mod displays;
 
 use clap::{arg, command};
+use displays::get_displays;
 use packages::get_packages;
 use shell::get_shell;
 use core::str;
@@ -20,7 +22,6 @@ use std::fmt::Display;
 use sysinfo::{Pid, ProcessRefreshKind, RefreshKind, System, Users};
 use text_splitter::TextSplitter;
 use uptime::get_uptime;
-use display_info::DisplayInfo;
 
 macro_rules! clearScreen {
     ($T:expr) => {
@@ -167,6 +168,13 @@ fn main() {
         lines,
         Some("Shell".to_string()),
         get_shell(sys)
+    );
+
+    // Displays
+    addLine!(
+        lines,
+        Some("Displays".to_string()),
+        get_displays()
     );
 
     if has_im {
