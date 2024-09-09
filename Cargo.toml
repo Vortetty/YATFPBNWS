@@ -21,32 +21,20 @@ codegen-units = 1
 rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-Z", "threads=24", "-Z", "location-detail=none"]
 
 [profile.dev]
+split-debuginfo = "packed"
+incremental = true
 strip = false
-opt-level = 3
-lto = "fat"
-codegen-units = 24
+opt-level = 1
+lto = "thin"
+codegen-units = 12
 debug=1
 rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-Z", "threads=24", "-C", "symbol-mangling-version=v0", "-C", "link-arg=-Wl,--no-rosegment"]
 
 [profile.dev.package."*"]
+split-debuginfo = "packed"
 strip = false
-opt-level = 3
-codegen-units = 24
-debug=1
-rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-Z", "threads=24", "-C", "symbol-mangling-version=v0", "-C", "link-arg=-Wl,--no-rosegment"]
-
-[profile.bench]
-strip = false
-opt-level = 3
-lto = "fat"
-codegen-units = 24
-debug=1
-rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-Z", "threads=24", "-C", "symbol-mangling-version=v0", "-C", "link-arg=-Wl,--no-rosegment"]
-
-[profile.bench.package."*"]
-strip = false
-opt-level = 3
-codegen-units = 24
+opt-level = 1
+codegen-units = 12
 debug=1
 rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-Z", "threads=24", "-C", "symbol-mangling-version=v0", "-C", "link-arg=-Wl,--no-rosegment"]
 
