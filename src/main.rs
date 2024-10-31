@@ -92,7 +92,7 @@ fn main() {
     let name_string = format!(
         "{}@{}",
         current_user.name(),
-        System::name().unwrap_or_else(|| -> String { String::from("?") })
+        System::host_name().unwrap_or_else(|| -> String { String::from("?") })
     );
 
     let args = command!()
@@ -132,7 +132,7 @@ fn main() {
         format!(
             "{}@{}",
             current_user.name().bright_magenta(),
-            System::name()
+            System::host_name()
                 .unwrap_or_else(|| -> String { String::from("?") })
                 .bright_magenta()
         )
@@ -176,6 +176,8 @@ fn main() {
         Some("Displays".to_string()),
         get_displays()
     );
+    
+
 
     if has_im {
         moveCursor!(0, 0);

@@ -1,4 +1,6 @@
 mod edid_video_input_params;
+mod preferred_timing;
+mod descriptor_parse;
 
 use std::{fs::File, path::Path};
 use byteorder::{BigEndian, LittleEndian, ReadBytesExt};
@@ -53,6 +55,7 @@ impl EDID {
                 is_anal: false
             },
             debug_number: 0,
+            descriptors: MonitorDescriptors
         };
 
         let mut f;
@@ -163,7 +166,11 @@ impl EDID {
             let _features = f.read_u8();
         }
 
-        
+        // *
+        // *
+        // * Display/Detailed descriptors
+        // *
+        // *
 
         return Ok(out);
     }

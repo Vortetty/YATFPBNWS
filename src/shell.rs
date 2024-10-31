@@ -12,8 +12,8 @@ pub fn get_shell(sys: System) -> String {
     match shell_name.as_str() {
         "zsh" => {
             // This op is SO F_CKING SLOW OML
-            // Command uses so many futexes it's insane
             // We need to optimize this somehow :/
+            // update: found out this is actually fairly fast, it was sysinfo's threading that slowed it
             let tmp = Command::new("zsh").arg("--version").output();
             if tmp.is_ok() {
                 format!("{}", String::from_utf8(tmp.unwrap().stdout.to_vec()).unwrap())

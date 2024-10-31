@@ -3,3 +3,4 @@ crystal-logo.png
 perf.data
 perf.data.old
 gecko_profile.json
+flamegraph.svg

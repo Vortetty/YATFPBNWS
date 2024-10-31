@@ -7,33 +7,29 @@ edition = "2021"
 authors = ["WinterSys/Vortetty"]
 
 [profile.release]
-#strip = "symbols"
+strip = "symbols"
 opt-level = 3
 lto = "fat"
 codegen-units = 1
 panic = "abort"
-debug=2
-rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-Z", "threads=24"]#, "-Z", "location-detail=none"]
+rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-Z", "threads=24", "-Z", "location-detail=none"]
 
 [profile.release.package."*"]
-#strip = "symbols"
+strip = "symbols"
 opt-level = 3
 codegen-units = 1
-debug=2
-rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-Z", "threads=24"]#, "-Z", "location-detail=none"]
+rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-Z", "threads=24", "-Z", "location-detail=none"]
 
 [profile.dev]
 incremental = true
 strip = false
 opt-level = 1
-lto = "thin"
 codegen-units = 12
 debug=2
 rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-Z", "threads=24", "-C", "symbol-mangling-version=v0", "-C", "link-arg=-Wl,--no-rosegment"]
 
 [profile.dev.package."*"]
 strip = false
-opt-level = 1
 codegen-units = 12
 debug=2
 rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-Z", "threads=24", "-C", "symbol-mangling-version=v0", "-C", "link-arg=-Wl,--no-rosegment"]
@@ -51,9 +47,9 @@ base64 = "0.22.1"
 tempfile = "3.1"
 console = { version = "0.15", default-features = false }
 lazy_static = "1.4"
-sixel-rs = "0.3.3"
+sixel-rs = "0.4.0"
 owo-colors = "4.1.0"
-sysinfo = { version = "0.31.4", default-features = false, features = ["component", "disk", "network", "system", "user"]}
-text-splitter = "0.16.1"
+sysinfo = {version="0.32.0", default-features = false, features = ["component", "disk", "network", "system", "user"]}
+text-splitter = "0.18.0"
 which = "6.0.3"
 byteorder = "1.5.0"
