@@ -6,20 +6,26 @@ mod shell;
 mod packages;
 mod utils;
 mod displays;
+mod terminal;
+mod desktop;
+mod cpu;
 
 use clap::{arg, command};
+use cpu::get_cpus;
+use desktop::get_de;
 use displays::get_displays;
 use packages::get_packages;
 use shell::get_shell;
+use terminal::get_term;
 use core::str;
 use crossterm::{cursor, execute};
 use csscolorparser::Color;
 use image::{imageops, DynamicImage, ImageBuffer, Rgba};
 use model::get_model;
 use owo_colors::OwoColorize;
-use std::io;
+use std::{env, io};
 use std::fmt::Display;
-use sysinfo::{Pid, ProcessRefreshKind, RefreshKind, System, Users};
+use sysinfo::{CpuRefreshKind, Pid, ProcessRefreshKind, RefreshKind, System, Users};
 use text_splitter::TextSplitter;
 use uptime::get_uptime;
 
@@ -78,8 +84,10 @@ macro_rules! moveCursor {
 
 fn main() {
     // Get bare minimum system info
-    let sys = System::new_with_specifics(
-        RefreshKind::new().with_processes(ProcessRefreshKind::everything())
+    let mut sys = System::new_with_specifics(
+        RefreshKind::new()
+            .with_processes(ProcessRefreshKind::everything())
+            .with_cpu(CpuRefreshKind::everything())
     );
     let users = Users::new_with_refreshed_list();
     let current_user = if let Some(p) = sys.process(Pid::from_u32(std::os::unix::process::parent_id())) {
@@ -163,21 +171,54 @@ fn main() {
     // https://github.com/dylanaraps/neofetch/blob/ccd5d9f52609bbdcd5d8fa78c4fdb0f12954125f/neofetch#L1509
     addLine!(lines, Some("Packages".to_string()), get_packages());
 
+    // Terminal
+    addLine!(
+        lines,
+        Some("Terminal".to_string()),
+        get_term(&sys)
+    );
+
     // Shell
     addLine!(
         lines,
         Some("Shell".to_string()),
-        get_shell(sys)
+        get_shell(&sys)
+    );
+
+    // Desktop env
+    addLine!(
+        lines,
+        Some("DE".to_string()),
+        get_de()
     );
 
     // Displays
+    let disps = get_displays();
+    let tmp = disps.split("\n");
     addLine!(
         lines,
         Some("Displays".to_string()),
-        get_displays()
+        "".to_string()
     );
-    
+    for i in tmp {
+        addLine!(lines, None, i.to_string(), 1);
+    }
 
+    // CPU Count
+    let cpus = get_cpus(&mut sys);
+    let tmp: Vec<&str> = cpus.split("\n").collect();
+    addLine!(
+        lines,
+        if tmp.len() > 1 {
+            Some(format!("CPUs"))
+        } else {
+            Some(format!("CPUs"))
+        },
+        "".to_string()
+    );
+    for i in tmp {
+        addLine!(lines, None, i.to_string(), 1);
+    }
 
     if has_im {
         moveCursor!(0, 0);
@@ -229,7 +270,7 @@ fn main() {
         im_w = 0;
     }
 
-    let max_line_size = term_size_x as usize - im_w as usize;
+    let max_line_size = term_size_x as usize - im_w as usize - 3 as usize;
     let mut totallines = 0;
     for (i, line) in lines.clone().iter().enumerate() {
         let linestr = format!("{}", line).replace("\n", " ");
@@ -262,4 +303,6 @@ fn main() {
         (u32::max(im_h, totallines - 1) - (1 * ((im_w > 0) as u32))) as u16
     );
     println!();
+
+    get_displays();
 }
