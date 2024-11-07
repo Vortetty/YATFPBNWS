@@ -40,7 +40,7 @@ rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-Z", "t
 clap = { version = "4.5.17", features = ["cargo"] }
 crossterm = "0.28.1"
 csscolorparser = { version = "0.7.0", features = ["lab", "rgb"] }
-image = "0.25.2"
+image = "0.25.5"
 termcolor = "1.1"
 ansi_colours = "1.0"
 base64 = "0.22.1"
@@ -51,8 +51,9 @@ sixel-rs = "0.4.0"
 owo-colors = "4.1.0"
 sysinfo = {version="0.32.0", default-features = false, features = ["component", "disk", "network", "system", "user"]}
 text-splitter = "0.18.1"
-which = "6.0.3"
+which = "7.0.0"
 byteorder = "1.5.0"
 regex = "1.11.1"
 detect-desktop-environment = "1.1.0"
 average = "0.15.1"
+wgpu = "23.0.0"

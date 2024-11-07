@@ -16,9 +16,8 @@ pub fn get_cpus(sys: &mut System) -> String {
     let mut cpu_counter: HashMap<String, CpuCnt> = HashMap::new();
 
     // Refresh cpu usage
-    std::thread::sleep(sysinfo::MINIMUM_CPU_UPDATE_INTERVAL);
     sys.refresh_cpu_all();
-    std::thread::sleep(sysinfo::MINIMUM_CPU_UPDATE_INTERVAL);
+    std::thread::sleep(sysinfo::MINIMUM_CPU_UPDATE_INTERVAL/2); // TODO: Add config for how long, default is 200ms but half that works consistently and accurately on my machine ¯\_(ツ)_/¯
     sys.refresh_cpu_all();
 
     for cpu in sys.cpus() {
@@ -55,7 +54,7 @@ pub fn get_cpus(sys: &mut System) -> String {
         let usage: MeanWithError = cpu.usages.iter().collect();
 
         cpus.push(
-            format!("{} ({}) @ {:.1}GHz ({:.2}±{:.2}%)", trimmedname, cpu.count, freq.mean(), usage.mean(), usage.error())
+            format!("{} ({}) @ {:.1}GHz ({:.1}±{:.1}%)", trimmedname, cpu.count, freq.mean(), usage.mean(), usage.error())
         );
     }
 

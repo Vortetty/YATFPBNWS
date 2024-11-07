@@ -9,6 +9,7 @@ mod displays;
 mod terminal;
 mod desktop;
 mod cpu;
+mod gpus;
 
 use clap::{arg, command};
 use cpu::get_cpus;
@@ -28,6 +29,7 @@ use std::fmt::Display;
 use sysinfo::{CpuRefreshKind, Pid, ProcessRefreshKind, RefreshKind, System, Users};
 use text_splitter::TextSplitter;
 use uptime::get_uptime;
+use gpus::get_gpus;
 
 macro_rules! clearScreen {
     ($T:expr) => {
@@ -87,7 +89,6 @@ fn main() {
     let mut sys = System::new_with_specifics(
         RefreshKind::new()
             .with_processes(ProcessRefreshKind::everything())
-            .with_cpu(CpuRefreshKind::everything())
     );
     let users = Users::new_with_refreshed_list();
     let current_user = if let Some(p) = sys.process(Pid::from_u32(std::os::unix::process::parent_id())) {
@@ -204,7 +205,7 @@ fn main() {
         addLine!(lines, None, i.to_string(), 1);
     }
 
-    // CPU Count
+    // CPUs
     let cpus = get_cpus(&mut sys);
     let tmp: Vec<&str> = cpus.split("\n").collect();
     addLine!(
@@ -212,7 +213,24 @@ fn main() {
         if tmp.len() > 1 {
             Some(format!("CPUs"))
         } else {
-            Some(format!("CPUs"))
+            Some(format!("CPU"))
+        },
+        "".to_string()
+    );
+    for i in tmp {
+        addLine!(lines, None, i.to_string(), 1);
+    }
+
+
+    // GPUs
+    let gpus = get_gpus();
+    let tmp: Vec<&str> = gpus.split("\n").collect();
+    addLine!(
+        lines,
+        if tmp.len() > 1 {
+            Some(format!("GPUs"))
+        } else {
+            Some(format!("GPU"))
         },
         "".to_string()
     );
