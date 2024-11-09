@@ -9,15 +9,17 @@ authors = ["WinterSys/Vortetty"]
 [profile.release]
 strip = "symbols"
 opt-level = 3
-lto = "fat"
 codegen-units = 1
 panic = "abort"
+lto = "thin"
+incremental = true
 rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-Z", "threads=24", "-Z", "location-detail=none"]
 
 [profile.release.package."*"]
 strip = "symbols"
 opt-level = 3
 codegen-units = 1
+incremental = true
 rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-Z", "threads=24", "-Z", "location-detail=none"]
 
 [profile.dev]
@@ -44,7 +46,7 @@ image = "0.25.5"
 termcolor = "1.1"
 ansi_colours = "1.0"
 base64 = "0.22.1"
-tempfile = "3.1"
+tempfile = "3.14.0"
 console = { version = "0.15", default-features = false }
 lazy_static = "1.4"
 sixel-rs = "0.4.0"

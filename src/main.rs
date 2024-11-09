@@ -1,35 +1,35 @@
 mod conf;
-mod model;
-mod uptime;
-mod viuer;
-mod shell;
-mod packages;
-mod utils;
-mod displays;
-mod terminal;
-mod desktop;
 mod cpu;
+mod desktop;
+mod displays;
 mod gpus;
+mod model;
+mod packages;
+mod shell;
+mod terminal;
+mod uptime;
+mod utils;
+mod viuer;
 
 use clap::{arg, command};
-use cpu::get_cpus;
-use desktop::get_de;
-use displays::get_displays;
-use packages::get_packages;
-use shell::get_shell;
-use terminal::get_term;
 use core::str;
+use cpu::get_cpus;
 use crossterm::{cursor, execute};
 use csscolorparser::Color;
+use desktop::get_de;
+use displays::get_displays;
+use gpus::get_gpus;
 use image::{imageops, DynamicImage, ImageBuffer, Rgba};
 use model::get_model;
 use owo_colors::OwoColorize;
-use std::{env, io};
+use packages::get_packages;
+use shell::get_shell;
 use std::fmt::Display;
-use sysinfo::{CpuRefreshKind, Pid, ProcessRefreshKind, RefreshKind, System, Users};
+use std::{env, io};
+use sysinfo::{Pid, ProcessRefreshKind, RefreshKind, System, Users};
+use terminal::get_term;
 use text_splitter::TextSplitter;
 use uptime::get_uptime;
-use gpus::get_gpus;
 
 macro_rules! clearScreen {
     ($T:expr) => {
@@ -87,15 +87,16 @@ macro_rules! moveCursor {
 fn main() {
     // Get bare minimum system info
     let mut sys = System::new_with_specifics(
-        RefreshKind::new()
-            .with_processes(ProcessRefreshKind::everything())
+        RefreshKind::new().with_processes(ProcessRefreshKind::everything()),
     );
     let users = Users::new_with_refreshed_list();
-    let current_user = if let Some(p) = sys.process(Pid::from_u32(std::os::unix::process::parent_id())) {
-        users.get_user_by_id(p.user_id().unwrap())
-    } else {
-        users.first()
-    }.unwrap();
+    let current_user =
+        if let Some(p) = sys.process(Pid::from_u32(std::os::unix::process::parent_id())) {
+            users.get_user_by_id(p.user_id().unwrap())
+        } else {
+            users.first()
+        }
+        .unwrap();
 
     let (term_size_x, term_size_y) = viuer::terminal_size();
     let name_string = format!(
@@ -173,34 +174,18 @@ fn main() {
     addLine!(lines, Some("Packages".to_string()), get_packages());
 
     // Terminal
-    addLine!(
-        lines,
-        Some("Terminal".to_string()),
-        get_term(&sys)
-    );
+    addLine!(lines, Some("Terminal".to_string()), get_term(&sys));
 
     // Shell
-    addLine!(
-        lines,
-        Some("Shell".to_string()),
-        get_shell(&sys)
-    );
+    addLine!(lines, Some("Shell".to_string()), get_shell(&sys));
 
     // Desktop env
-    addLine!(
-        lines,
-        Some("DE".to_string()),
-        get_de()
-    );
+    addLine!(lines, Some("DE".to_string()), get_de());
 
     // Displays
     let disps = get_displays();
     let tmp = disps.split("\n");
-    addLine!(
-        lines,
-        Some("Displays".to_string()),
-        "".to_string()
-    );
+    addLine!(lines, Some("Displays".to_string()), "".to_string());
     for i in tmp {
         addLine!(lines, None, i.to_string(), 1);
     }
@@ -220,7 +205,6 @@ fn main() {
     for i in tmp {
         addLine!(lines, None, i.to_string(), 1);
     }
-
 
     // GPUs
     let gpus = get_gpus();
@@ -288,39 +272,49 @@ fn main() {
         im_w = 0;
     }
 
+    //let max_line_size = term_size_x as usize - im_w as usize - 3 as usize;
+    //let mut totallines = 0;
+    //for (i, line) in lines.clone().iter().enumerate() {
+    //    let linestr = format!("{}", line).replace("\n", " ");
+    //    let strs = TextSplitter::new(max_line_size)
+    //        .chunks(linestr.as_str())
+    //        .collect::<Vec<&str>>();
+    //    for (j, s) in strs.iter().enumerate() {
+    //        if j > 0 && j < strs.len() - 1 {
+    //            moveCursor!(
+    //                (im_w + (1 * ((im_w != 0) as u32))) as u16,
+    //                i as u16 + j as u16
+    //            );
+    //            println!("{}│ {}", " ".repeat(line.newline_left_pad), s);
+    //        } else if j == 0 {
+    //            moveCursor!((im_w + (1 * ((im_w != 0) as u32))) as u16, i as u16 + j as u16);
+    //            println!("{}{}", " ".repeat(line.newline_left_pad), s);
+    //        } else {
+    //            moveCursor!(
+    //                (im_w + (1 * ((im_w != 0) as u32))) as u16,
+    //                i as u16 + j as u16
+    //            );
+    //            println!("{}╰ {}", " ".repeat(line.newline_left_pad), s);
+    //        }
+    //    }
+    //    totallines += strs.len() as u32;
+    //}
+
+    //moveCursor!(
+    //    (im_w - (1 * ((im_w > 0) as u32))) as u16,
+    //    (u32::max(im_h, totallines - 1) - (1 * ((im_w > 0) as u32))) as u16
+    //);
+    //println!();
     let max_line_size = term_size_x as usize - im_w as usize - 3 as usize;
-    let mut totallines = 0;
-    for (i, line) in lines.clone().iter().enumerate() {
-        let linestr = format!("{}", line).replace("\n", " ");
+    let mut toPrint: Vec<String> = vec![];
+    for line in lines {
+        let tmp = line.to_string();
         let strs = TextSplitter::new(max_line_size)
-            .chunks(linestr.as_str())
+            .chunks(tmp.as_str())
             .collect::<Vec<&str>>();
-        totallines += strs.len() as u32;
-        for (j, s) in strs.iter().enumerate() {
-            if j > 0 && j < strs.len() - 1 {
-                moveCursor!(
-                    (im_w + (1 * ((im_w != 0) as u32))) as u16,
-                    i as u16 + j as u16
-                );
-                println!("{}│ {}", " ".repeat(line.newline_left_pad), s);
-            } else if j == 0 {
-                moveCursor!((im_w + (1 * ((im_w != 0) as u32))) as u16, i as u16);
-                println!("{}{}", " ".repeat(line.newline_left_pad), s);
-            } else {
-                moveCursor!(
-                    (im_w + (1 * ((im_w != 0) as u32))) as u16,
-                    i as u16 + j as u16
-                );
-                println!("{}╰ {}", " ".repeat(line.newline_left_pad), s);
-            }
+        for (i, l) in strs.clone().iter().enumerate() {
+            // TODO: unfuck this code straight off r/shitfromabutt
         }
+
     }
-
-    moveCursor!(
-        (im_w - (1 * ((im_w > 0) as u32))) as u16,
-        (u32::max(im_h, totallines - 1) - (1 * ((im_w > 0) as u32))) as u16
-    );
-    println!();
-
-    get_displays();
 }

@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use regex::Regex;
-use wgpu::{Adapter, Backend};
+use wgpu::Adapter;
 
 struct AdapterCnt {
     count: i64,
