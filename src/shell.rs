@@ -1,4 +1,5 @@
 use std::process::Command;
+use regex::Regex;
 use sysinfo::{Pid, System};
 
 pub fn get_shell(sys: &System) -> String {
@@ -15,8 +16,9 @@ pub fn get_shell(sys: &System) -> String {
             // We need to optimize this somehow :/
             // update: found out this is actually fairly fast, it was sysinfo's threading that slowed it
             let tmp = Command::new("zsh").arg("--version").output();
+            let vermatch = Regex::new(r"(?i)zsh [\d\.]+").unwrap();
             if tmp.is_ok() {
-                format!("{}", String::from_utf8(tmp.unwrap().stdout.to_vec()).unwrap())
+                format!("{}", vermatch.find(String::from_utf8(tmp.unwrap().stdout.to_vec()).unwrap().as_str()).unwrap().as_str())
             } else {
                 "zsh ?.?".to_string()
             }

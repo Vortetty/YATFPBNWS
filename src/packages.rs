@@ -14,5 +14,5 @@ pub fn get_packages() -> String {
         }
     }
 
-    return packages.trim_end().to_string().trim_end_matches(", ").to_string();
+    return packages.trim_end().to_string().trim_end_matches(",").to_string().trim_end_matches(", ").to_string();
 }
