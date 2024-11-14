@@ -9,3 +9,9 @@ Crystal/Arch Linux is the only semi-guaranteed support, everything else is imple
 ## Todo
 
 - [ ] Unfuck all of that lack of error handling
+
+### Code Style
+
+- Avoid oneline if-statements for readability
+- Do whatever is most readable for the code, prefer readability over size optimization
+- Keep lines short if possible, split calls on function return values onto new lines
