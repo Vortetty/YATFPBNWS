@@ -1,5 +1,8 @@
+.vscode/*
+.VSCodeCounter/*
 /target
 crystal-logo.png
+cachy-logo.png
 perf.data
 perf.data.old
 gecko_profile.json
