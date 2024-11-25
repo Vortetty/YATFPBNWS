@@ -25,9 +25,7 @@ pub struct Config {
     /// Use Kitty protocol if the terminal supports it. Defaults to true.
     pub use_kitty: bool,
     /// Use iTerm protocol if the terminal supports it. Defaults to true.
-    pub use_iterm: bool,
-    /// Use Sixel protocol if the terminal supports it. Defaults to true.
-    pub use_sixel: bool,
+    pub use_iterm: bool
 }
 
 impl std::default::Default for Config {
@@ -43,7 +41,6 @@ impl std::default::Default for Config {
             truecolor: utils::truecolor_available(),
             use_kitty: true,
             use_iterm: true,
-            use_sixel: true,
         }
     }
 }

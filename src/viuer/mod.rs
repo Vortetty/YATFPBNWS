@@ -45,8 +45,6 @@ pub use error::ViuResult;
 pub use printer::{get_kitty_support, is_iterm_supported, KittySupport};
 pub use utils::terminal_size;
 
-pub use printer::is_sixel_supported;
-
 /// Default printing method. Uses either iTerm or Kitty graphics protocol, if supported,
 /// and half blocks otherwise.
 ///
@@ -117,10 +115,6 @@ pub fn print_from_file<P: AsRef<Path>>(filename: P, config: &Config) -> ViuResul
 
 // Choose the appropriate printer to use based on user config and availability
 fn choose_printer(config: &Config) -> PrinterType {
-    if config.use_sixel && is_sixel_supported() {
-        return PrinterType::Sixel;
-    }
-
     if config.use_iterm && is_iterm_supported() {
         PrinterType::iTerm
     } else if config.use_kitty && get_kitty_support() != KittySupport::None {

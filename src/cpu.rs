@@ -11,14 +11,16 @@ struct CpuCnt {
     frequencies: Vec<f64>, // GHz
 }
 
-pub fn get_cpus(sys: &mut System) -> String {
+pub fn get_cpus(sys: &mut System, show_usage: bool) -> String {
     let mut cpus: Vec<String> = vec![];
     let mut cpu_counter: HashMap<String, CpuCnt> = HashMap::new();
 
     // Refresh cpu usage
     sys.refresh_cpu_all();
-    std::thread::sleep(sysinfo::MINIMUM_CPU_UPDATE_INTERVAL/2); // TODO: Add config for how long, default is 200ms but half that works consistently and accurately on my machine ¯\_(ツ)_/¯
-    sys.refresh_cpu_all();
+    if show_usage.clone() {
+        std::thread::sleep(sysinfo::MINIMUM_CPU_UPDATE_INTERVAL); // TODO: Add config for how long, default is 200ms but half that works consistently and accurately on my machine ¯\_(ツ)_/¯
+        sys.refresh_cpu_all();
+    }
 
     for cpu in sys.cpus() {
         if cpu_counter.contains_key(&cpu.brand().to_string()) {
@@ -53,9 +55,15 @@ pub fn get_cpus(sys: &mut System) -> String {
         let freq: MeanWithError = cpu.frequencies.iter().collect();
         let usage: MeanWithError = cpu.usages.iter().collect();
 
-        cpus.push(
-            format!("{} ({}) @ {:.1}GHz ({:.1}±{:.1}%)", trimmedname, cpu.count, freq.mean(), usage.mean(), usage.error())
-        );
+        if show_usage.clone() {
+            cpus.push(
+                format!("{} ({}) @ {:.1}GHz ({:.1}±{:.1}%)", trimmedname, cpu.count, freq.mean(), usage.mean(), usage.error())
+            );
+        } else {
+            cpus.push(
+                format!("{} ({}) @ {:.1}GHz", trimmedname, cpu.count, freq.mean())
+            );
+        }
     }
 
     if cpus.len() == 0 {

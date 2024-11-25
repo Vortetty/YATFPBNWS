@@ -141,6 +141,7 @@ fn main() {
         .arg(arg!(-c --conf <PATH> "Load a config file").required(false))
         .arg(arg!(-w --colorwidth <WIDTH> "Width of the color blocks (default: 3)").required(false))
         .arg(arg!(-t --truecolor "Enable truecolor block (will be a minimum of [colorwidth/2 * colorwidth/2])").action(ArgAction::SetTrue))
+        .arg(arg!(-u --cpuusage "Enable cpu usage (requires an extra delay, may be slow)").action(ArgAction::SetTrue))
         .get_matches();
 
     let mut im_w =
@@ -216,7 +217,7 @@ fn main() {
     }
 
     // CPUs
-    let cpus = get_cpus(&mut sys);
+    let cpus = get_cpus(&mut sys, args.get_one::<bool>("cpuusage").unwrap().clone());
     let tmp: Vec<&str> = cpus.split("\n").collect();
     addLine!(
         lines,

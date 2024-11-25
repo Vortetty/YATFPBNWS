@@ -13,14 +13,14 @@ codegen-units = 1
 panic = "abort"
 lto = "thin"
 incremental = true
-rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-Z", "threads=24", "-Z", "location-detail=none"]
+rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-Z", "location-detail=none"]
 
 [profile.release.package."*"]
 strip = "symbols"
 opt-level = 3
 codegen-units = 1
 incremental = true
-rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-Z", "threads=24", "-Z", "location-detail=none"]
+rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-Z", "location-detail=none"]
 
 [profile.dev]
 incremental = true
@@ -28,18 +28,18 @@ strip = false
 opt-level = 1
 codegen-units = 12
 debug=2
-rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-Z", "threads=24", "-C", "symbol-mangling-version=v0", "-C", "link-arg=-Wl,--no-rosegment"]
+rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-C", "symbol-mangling-version=v0", "-C", "link-arg=-Wl,--no-rosegment"]
 
 [profile.dev.package."*"]
 strip = false
 codegen-units = 12
 debug=2
-rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-Z", "threads=24", "-C", "symbol-mangling-version=v0", "-C", "link-arg=-Wl,--no-rosegment"]
+rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=mold", "-C", "symbol-mangling-version=v0", "-C", "link-arg=-Wl,--no-rosegment"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-clap = { version = "4.5.17", features = ["cargo"] }
+clap = { version = "4.5.21", features = ["cargo"] }
 crossterm = "0.28.1"
 csscolorparser = { version = "0.7.0", features = ["lab", "rgb"] }
 image = "0.25.5"
@@ -49,7 +49,6 @@ base64 = "0.22.1"
 tempfile = "3.14.0"
 console = { version = "0.15", default-features = false }
 lazy_static = "1.4"
-sixel-rs = "0.4.0"
 owo-colors = "4.1.0"
 sysinfo = {version="0.32.0", default-features = false, features = ["component", "disk", "network", "system", "user"]}
 text-splitter = "0.18.1"

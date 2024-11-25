@@ -12,11 +12,6 @@ pub use block::BlockPrinter;
 mod kitty;
 pub use kitty::{get_kitty_support, KittyPrinter, KittySupport};
 
-
-mod sixel;
-
-pub use self::sixel::{is_sixel_supported, SixelPrinter};
-
 mod iterm;
 pub use iterm::iTermPrinter;
 pub use iterm::is_iterm_supported;
@@ -48,8 +43,6 @@ pub enum PrinterType {
     Block,
     Kitty,
     iTerm,
-    
-    Sixel,
 }
 
 impl Printer for PrinterType {
@@ -63,8 +56,6 @@ impl Printer for PrinterType {
             PrinterType::Block => BlockPrinter.print(stdout, img, config),
             PrinterType::Kitty => KittyPrinter.print(stdout, img, config),
             PrinterType::iTerm => iTermPrinter.print(stdout, img, config),
-            
-            PrinterType::Sixel => SixelPrinter.print(stdout, img, config),
         }
     }
 
@@ -78,8 +69,6 @@ impl Printer for PrinterType {
             PrinterType::Block => BlockPrinter.print_from_file(stdout, filename, config),
             PrinterType::Kitty => KittyPrinter.print_from_file(stdout, filename, config),
             PrinterType::iTerm => iTermPrinter.print_from_file(stdout, filename, config),
-            
-            PrinterType::Sixel => SixelPrinter.print_from_file(stdout, filename, config),
         }
     }
 }
