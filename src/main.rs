@@ -139,7 +139,7 @@ fn main() {
         .arg(arg!(-i --im <FILE> "Image to display, defaults to none").required(false))
         .arg(arg!(-b --bgc <COLOR> "Any valid css color").required(false))
         .arg(arg!(-c --conf <PATH> "Load a config file").required(false))
-        .arg(arg!(-w --colorwidth <WIDTH> "Width of the color blocks (default: 3)").required(false))
+        .arg(arg!(-w --colorwidth <WIDTH> "Width of the color blocks (default: 3, 0 to disable)").required(false).value_parser(clap::value_parser!(u16)))
         .arg(arg!(-t --truecolor "Enable truecolor block (will be a minimum of [colorwidth/2 * colorwidth/2])").action(ArgAction::SetTrue))
         .arg(arg!(-u --cpuusage "Enable cpu usage (requires an extra delay, may be slow)").action(ArgAction::SetTrue))
         .get_matches();
@@ -340,7 +340,7 @@ fn main() {
 
 
     // Color block calc
-    let colorblockwidth_opt = args.get_one::<usize>("colorwidth");
+    let colorblockwidth_opt = args.get_one::<u16>("colorwidth");
     let colorblockwidth = if colorblockwidth_opt.is_some() {
         colorblockwidth_opt.unwrap().clone()
     } else {
@@ -381,12 +381,13 @@ fn main() {
     }
 
     // Standard colorblock out
-    println!();
-    moveCursorX!((im_w + (1 * ((im_w != 0) as u32))) as u16);
-    println!("{}{}{}{}{}{}{}{}", colorblock_str.on_black(), colorblock_str.on_red(), colorblock_str.on_green(), colorblock_str.on_yellow(), colorblock_str.on_blue(), colorblock_str.on_purple(), colorblock_str.on_cyan(), colorblock_str.on_white());
-    moveCursorX!((im_w + (1 * ((im_w != 0) as u32))) as u16);
-    println!("{}{}{}{}{}{}{}{}", colorblock_str.on_bright_black(), colorblock_str.on_bright_red(), colorblock_str.on_bright_green(), colorblock_str.on_bright_yellow(), colorblock_str.on_bright_blue(), colorblock_str.on_bright_purple(), colorblock_str.on_bright_cyan(), colorblock_str.on_bright_white());
-
+    if colorblockwidth > 0 {
+        println!();
+        moveCursorX!((im_w + (1 * ((im_w != 0) as u32))) as u16);
+        println!("{}{}{}{}{}{}{}{}", colorblock_str.on_black(), colorblock_str.on_red(), colorblock_str.on_green(), colorblock_str.on_yellow(), colorblock_str.on_blue(), colorblock_str.on_purple(), colorblock_str.on_cyan(), colorblock_str.on_white());
+        moveCursorX!((im_w + (1 * ((im_w != 0) as u32))) as u16);
+        println!("{}{}{}{}{}{}{}{}", colorblock_str.on_bright_black(), colorblock_str.on_bright_red(), colorblock_str.on_bright_green(), colorblock_str.on_bright_yellow(), colorblock_str.on_bright_blue(), colorblock_str.on_bright_purple(), colorblock_str.on_bright_cyan(), colorblock_str.on_bright_white());
+    }
     // Newline (duhhhh)
     println!();
 }

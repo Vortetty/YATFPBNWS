@@ -23,9 +23,9 @@ pub fn get_gpus() -> String {
         let mesa = Regex::new("(?i)Mesa").unwrap();
         let vulkan = Regex::new("(?i)vulkan").unwrap();
         let gl = Regex::new("(?i)gl").unwrap();
-        let mesa_name_fixer = Regex::new(r"(?i)\(.*(LLVM|DRM).*\)").unwrap();
+        let name_fixer = Regex::new(r"(?i)\(.*(LLVM|DRM|RADV).*\)").unwrap();
 
-        let name = mesa_name_fixer.replace(a.name.as_str(), "").trim().to_string();
+        let name = name_fixer.replace(a.name.as_str(), "").trim().to_string();
 
         let mut driver: Option<String> = None;
 
@@ -67,7 +67,7 @@ pub fn get_gpus() -> String {
         }
     }
 
-    for (_, gpu) in gpu_counter {
+    for (_, mut gpu) in gpu_counter {
         let mut out = gpu.name + " (";
 
         if gpu.gl && gpu.vulkan {
@@ -78,6 +78,8 @@ pub fn get_gpus() -> String {
             out += "Vulkan, ";
         }
 
+        gpu.drivers.sort();
+        gpu.drivers.dedup();
         for driver in gpu.drivers {
             out += (driver + ", ").as_str();
         }
